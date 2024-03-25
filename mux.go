@@ -112,7 +112,7 @@ func UseStd(s *Server, middlewares ...func(http.Handler) http.Handler) {
 }
 
 func Use(s *Server, middlewares ...func(http.Handler) http.Handler) {
-	s.middlewares = append(s.middlewares, middlewares...)
+	s.middlewares = append(middlewares, s.middlewares...)
 }
 
 // Handle registers a standard http handler into the default mux.
