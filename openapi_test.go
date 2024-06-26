@@ -56,7 +56,7 @@ func TestServer_generateOpenAPI(t *testing.T) {
 	Get(s, "/", func(*ContextNoBody) (MyStruct, error) {
 		return MyStruct{}, nil
 	})
-	Post(s, "/post", func(*ContextWithBody[MyStruct]) ([]MyStruct, error) {
+	Post(s, "/post", func(*ContextWithBody[[]MyStruct]) ([]MyStruct, error) {
 		return nil, nil
 	})
 	Get(s, "/post/{id}", func(*ContextNoBody) (MyOutputStruct, error) {
