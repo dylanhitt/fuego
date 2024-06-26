@@ -163,13 +163,10 @@ func RegisterOpenAPIOperation[T, B any](s *Server, method, path string) (*openap
 	// Request body
 	bodyTag := tagFromType(*new(B))
 	if (method == http.MethodPost || method == http.MethodPut || method == http.MethodPatch) && bodyTag != "unknown-interface" && bodyTag != "string" {
-
-		bodySchema, err := generator.NewSchemaRefForValue(new(B), s.OpenApiSpec.Components.Schemas)
+		bodySchema, err := schemaRefFromType[B](s, *new(B))
 		if err != nil {
 			return operation, err
 		}
-		s.OpenApiSpec.Components.Schemas[bodyTag] = bodySchema
-
 		content := openapi3.NewContentWithSchema(bodySchema.Value, []string{"application/json"})
 		requestBody := openapi3.NewRequestBody().
 			WithRequired(true).
@@ -188,7 +185,7 @@ func RegisterOpenAPIOperation[T, B any](s *Server, method, path string) (*openap
 	}
 
 	tag := tagFromType(*new(T))
-	responseSchema, err := generator.NewSchemaRefForValue(new(T), s.OpenApiSpec.Components.Schemas)
+	responseSchema, err := schemaRefFromType[T](s, *new(T))
 	if err != nil {
 		return operation, err
 	}
@@ -211,6 +208,52 @@ func RegisterOpenAPIOperation[T, B any](s *Server, method, path string) (*openap
 	s.OpenApiSpec.AddOperation(path, method, operation)
 
 	return operation, nil
+}
+
+func schemaRefFromType[V any](s *Server, v any) (*openapi3.SchemaRef, error) {
+	if v == nil {
+		return &openapi3.SchemaRef{
+			Ref: "#/components/schemas/unknown-interface",
+		}, nil
+	}
+
+	schemaRef, err := schemaDive[V](s, reflect.TypeOf(v), openapi3.SchemaRef{}, 4)
+	return &schemaRef, err
+}
+
+func schemaDive[V any](s *Server, t reflect.Type, schemaRef openapi3.SchemaRef, maxDepth int) (openapi3.SchemaRef, error) {
+	if maxDepth == 0 {
+		return openapi3.SchemaRef{
+			Ref: "#/components/schemas/default",
+		}, nil
+	}
+
+	switch t.Kind() {
+	case reflect.Ptr, reflect.Map, reflect.Chan, reflect.Func, reflect.UnsafePointer:
+		return schemaDive[V](s, t.Elem(), schemaRef, maxDepth-1)
+	case reflect.Slice, reflect.Array:
+		item, err := schemaDive[V](s, t.Elem(), schemaRef, maxDepth-1)
+		if err != nil {
+			return schemaRef, err
+		}
+		schemaRef.Value = &openapi3.Schema{
+			Type:  "array",
+			Items: &item,
+		}
+		return schemaRef, nil
+	default:
+		schemaRef, ok := s.OpenApiSpec.Components.Schemas[t.Name()]
+		if !ok {
+			var err error
+			schemaRef, err = generator.NewSchemaRefForValue(new(V), s.OpenApiSpec.Components.Schemas)
+			if err != nil {
+				return openapi3.SchemaRef{}, err
+			}
+			s.OpenApiSpec.Components.Schemas[t.Name()] = schemaRef
+		}
+		schemaRef.Ref = "#/components/schemas/" + t.Name()
+		return *schemaRef, nil
+	}
 }
 
 func tagFromType(v any) string {
