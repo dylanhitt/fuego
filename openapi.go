@@ -174,6 +174,7 @@ func RegisterOpenAPIOperation[T, B any](s *Server, method, path string) (*openap
 			WithContent(content)
 
 		s.OpenApiSpec.Components.RequestBodies[bodyTag] = &openapi3.RequestBodyRef{
+			Ref:   "#/components/schemas/" + bodyTag,
 			Value: requestBody,
 		}
 
