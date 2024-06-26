@@ -184,12 +184,10 @@ func RegisterOpenAPIOperation[T, B any](s *Server, method, path string) (*openap
 		}
 	}
 
-	tag := tagFromType(*new(T))
 	responseSchema, err := schemaRefFromType[T](s, *new(T))
 	if err != nil {
 		return operation, err
 	}
-	s.OpenApiSpec.Components.Schemas[tag] = responseSchema
 
 	content := openapi3.NewContentWithSchema(responseSchema.Value, []string{"application/json"})
 	response := openapi3.NewResponse().
