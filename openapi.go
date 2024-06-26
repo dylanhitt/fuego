@@ -242,12 +242,12 @@ func schemaDive[V any](s *Server, t reflect.Type, schemaRef openapi3.SchemaRef, 
 	default:
 		schemaRef, ok := s.OpenApiSpec.Components.Schemas[t.Name()]
 		if !ok {
-			var err error
-			schemaRef, err = generator.NewSchemaRefForValue(new(V), s.OpenApiSpec.Components.Schemas)
+			componentRef, err := generator.NewSchemaRefForValue(new(V), s.OpenApiSpec.Components.Schemas)
 			if err != nil {
 				return openapi3.SchemaRef{}, err
 			}
-			s.OpenApiSpec.Components.Schemas[t.Name()] = schemaRef
+			s.OpenApiSpec.Components.Schemas[t.Name()] = componentRef
+			schemaRef.Value = componentRef.Value
 		}
 		schemaRef.Ref = "#/components/schemas/" + t.Name()
 		return *schemaRef, nil
