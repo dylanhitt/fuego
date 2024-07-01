@@ -3,7 +3,7 @@ module github.com/go-fuego/fuego
 go 1.22.2
 
 require (
-	github.com/getkin/kin-openapi v0.125.0
+	github.com/getkin/kin-openapi v0.122.0
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gomarkdown/markdown v0.0.0-20231222211730-1d6d20845b47
@@ -28,6 +28,7 @@ require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
