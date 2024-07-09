@@ -29,6 +29,9 @@ fmt:
 lint:
 	go run github.com/golangci/golangci-lint/cmd/golangci-lint@latest run
 
+lint-markdown:
+	markdownlint --dot .
+
 example:
 	( cd examples/full-app-gourmet && go run . -debug )
 
@@ -42,5 +45,5 @@ docs:
 docs-open:
 	go run golang.org/x/pkgsite/cmd/pkgsite@latest -http localhost:8084 -open
 
-.PHONY: docs-open docs example-watch example lint fmt ci ci-full
+.PHONY: docs-open docs example-watch example lint lint-markdown fmt ci ci-full
 .PHONY: dependencies-analyze build bench cover-web cover test

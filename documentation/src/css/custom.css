@@ -28,3 +28,52 @@
   --ifm-color-primary-lightest: #ffe1b7;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/*
+
+Mobile: <996px
+Small : 996px - 1159px
+Medium : 1160px - 1429px
+Large : >1430px
+
+*/
+
+.display-mobile {
+  display: block;
+}
+
+@media (min-width: 996px) {
+  .display-mobile {
+    display: none;
+  }
+}
+
+.display-small {
+  display: none;
+}
+
+@media (min-width: 996px) and (max-width: 1159px) {
+  .display-small {
+    display: block;
+  }
+}
+
+.display-medium {
+  display: none;
+}
+
+@media (min-width: 1161px) and (max-width: 1429px) {
+  .display-medium {
+    display: block;
+  }
+}
+
+.display-large {
+  display: none;
+}
+
+@media (min-width: 1430px) {
+  .display-large {
+    display: block;
+  }
+}
